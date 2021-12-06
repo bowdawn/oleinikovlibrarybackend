@@ -1,40 +1,52 @@
-import express, { json } from "express";
+import  express  from "express";
 import mongoose from 'mongoose'
-import product from "./api/product.js";
+
+import Book from "./Book.js"
+
 import dotenv from "dotenv"
 
 dotenv.config()
-
-
-
-const PORT = process.env.PORT || 5000;
-
-const DB_URL = process.env.DB_URL || "Error - DB URL is not definted";
+const uri = process.env.MONGODB_URI;
 
 const app = express();
 
-app.use(json({ extended: false }));
+app.use(express.json({ extended: false }));
 
-app.use("/api/product", product);
 
-app.use("/", ( req, res) => {
-    try {
-      res.status(200).json("Oleinikov Library");
-    } catch (error) {
-      console.error(error);
-      return res.status(500).send("Server error");
-    }
+
+app.post("/", (req, res) =>
+{
+  const {author, title, language, picture} = req.body
+  console.log(req.body)
+  const book = Book.create({
+    author,
+    title,
+    language,
+    picture
+  })
+  res.status(200).json(book)
+}
+)
+app.use("/", (req, res ) =>  {
+
+ try {
+  res.status(200).json(
+    "Oleinikov Library"
+  );
+} catch (error) {
+  console.error(error);
+  return res.status(500).send("Server error");
+}
 });
 
+const PORT = process.env.PORT || 5000;
 async function startApp() {
   try {
-    await mongoose.connect(DB_URL);
-    app.listen(PORT, () => app.listen(PORT, () => console.log(`Server is running in port ${PORT}` ) ))
+      await mongoose.connect(uri, {useUnifiedTopology: true, useNewUrlParser: true})
+      app.listen(PORT, () => console.log('SERVER STARTED ON PORT ' + PORT))
   } catch (e) {
-    console.log(e)
+      console.log(e)
   }
 }
 
 startApp()
-
-
