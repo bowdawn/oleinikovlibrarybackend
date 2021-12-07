@@ -1,21 +1,27 @@
 import { Router } from "express";
+import Book from "../models/Book.js"
 const router = Router();
 
-/**
- * GET product list.
- *
- * @return product list | empty.
- */
-router.get("/", async (req, res) => {
-  try {
-    res.json({
-      status: 200,
-      message: "Get data has successfully",
-    });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).send("Server error");
-  }
-});
 
+
+
+
+ router.post("", async (req, res) =>
+ {
+   const {author, title, language, picture} = req.body
+   console.log(req.body)
+   try{
+   const book = await Book.create({
+     author,
+     title,
+     language,
+     picture
+   })
+   res.status(200).json(book)}
+   catch(e){
+     console.log(e)
+     res.status(400).json(e)
+   }
+ }
+ )
 export default router;
