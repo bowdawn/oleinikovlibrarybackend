@@ -12,7 +12,11 @@ const PORT = process.env.PORT || 5000;
 const app = express();
 app.use(express.json());
 
- app.use("/", (req, res ) =>  {
+
+
+app.use("/api/user", user)
+app.use("/api/book", auth, book)
+app.use("/", (req, res ) =>  {
   try {
    res.status(200).json(
      "Oleinikov Library"
@@ -22,9 +26,6 @@ app.use(express.json());
    return res.status(500).send("Server error");
  }
  });
-
-app.use("/api/user", user)
-app.use("/api/book", auth, book)
 
 
 async function startApp() {
