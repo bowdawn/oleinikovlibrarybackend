@@ -1,36 +1,29 @@
 import  express  from "express";
-import mongoose from 'mongoose'
 import dotenv from "dotenv"
-import book from "./api/book.js";
-import user from "./api/user.js";
-import auth from "./middleware/validate-token.js"
+import book from "./routes/book.js";
+import user from "./routes/user.js";
+import root from "./routes/root.js";
+//import auth from "./middleware/validate-token.js"
+import connectToDatabase from "./database/mongodb.js"
+import fileUpload from 'express-fileupload';
+
 
 dotenv.config()
-const uri = process.env.MONGODB_URI;
 const PORT = process.env.PORT || 5000;
 
 const app = express();
 app.use(express.json());
-
-
+app.use(fileUpload({}))
 
 app.use("/api/user", user)
-app.use("/api/book", auth, book)
-app.use("/", (req, res ) =>  {
-  try {
-   res.status(200).json(
-     "Oleinikov Library"
-   );
- } catch (error) {
-   console.error(error);
-   return res.status(500).send("Server error");
- }
- });
-
+app.use("/api/book", book)
+//app.use("/api/book", auth, book)
+app.use("/api", root);
+app.use("/", root);
 
 async function startApp() {
   try {
-      await mongoose.connect(uri, {useUnifiedTopology: true, useNewUrlParser: true})
+      connectToDatabase()
       app.listen(PORT, () => console.log('SERVER STARTED ON PORT ' + PORT))
   } catch (e) {
       console.log(e)

@@ -7,7 +7,7 @@ const verifyToken = (req, res, next) => {
         if (!token) {
             return res.status(403).json({message: "User is not authorized"})
         }
-        const decodedData = jwt.verify(token,process.env.TOKEN_SECRET )
+        const decodedData = jwt.verify(token,process.env.TOKEN_SECRET)
         req.user = decodedData
         next()
     } catch (e) {
