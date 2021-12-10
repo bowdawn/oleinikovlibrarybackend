@@ -10,7 +10,7 @@ class BookService {
             author: book.author,
             title: book.title,
             language: book.language,
-            picture: "hello"
+            picture: "https://drive.google.com/uc?export=view&id=" +  response.data.id
         })
     }
 

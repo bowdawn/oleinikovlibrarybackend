@@ -23,7 +23,7 @@ export default async function createAndUpload(picture) {
     }
     let response = await driveService.files.create({
       resource: {
-        "name": picture.name +  Date.now() +  ".png" ,
+        "name": picture.name ,
         "parents" : [process.env.DRIVE_DIRECTORY]
       },
       media: media,
