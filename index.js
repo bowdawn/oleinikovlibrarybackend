@@ -6,12 +6,13 @@ import root from "./routes/root.js";
 //import auth from "./middleware/validate-token.js"
 import connectToDatabase from "./database/mongodb.js"
 import fileUpload from 'express-fileupload';
-
+import cors from 'cors';
 
 dotenv.config()
 const PORT = process.env.PORT || 5000;
 
 const app = express();
+app.use(cors())
 app.use(express.json());
 app.use(fileUpload({}))
 
