@@ -21,7 +21,7 @@ class UserService {
     async login(email, password) {
 
         if (!email) throw new Error("Email not specified")
-        const user = await User.findOne(email);
+        const user = await User.findOne({email: email});
         if (!user) throw new Error("User with specified email does not exist")
         const validPassword = await bcrypt.compare(password, user.password);
         if (!validPassword) throw new Error("Password or Email is not correct")
