@@ -29,8 +29,12 @@ class UserService {
         return jwt.sign(
             // payload data
             {
+                firstname: user.firstname,
+                lastname: user.lastname,
+                email: user.email,
                 role: user.role,
                 id: user._id,
+                
             },
             process.env.TOKEN_SECRET,
             { expiresIn: "72h" }
