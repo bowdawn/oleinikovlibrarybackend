@@ -14,8 +14,8 @@ class UserController {
 
     async login(req, res) {
         try {
-            const token = await UserService.login(req.body.email, req.body.password) 
-            res.header("auth-token", token).json({ token });
+            const user = await UserService.login(req.body.email, req.body.password) 
+            res.header("auth-token", user.token).json(user);
         }
         catch (e) {
             res.status(500).json(e.toString())
