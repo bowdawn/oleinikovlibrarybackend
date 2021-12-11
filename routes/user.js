@@ -1,7 +1,6 @@
 import { Router } from "express";
 import UserController from "../controllers/user.js"
-import dotenv from "dotenv"
-dotenv.config()
+
 const router = Router();
 
 router.post("/registration", UserController.registration )

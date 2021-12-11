@@ -7,4 +7,5 @@ router.get("", BookController.getAll);
 router.get("/:id", BookController.getOne);
 router.put("", BookController.update)
 router.delete("/:id", BookController.delete)
+
 export default router;
