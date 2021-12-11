@@ -11,7 +11,7 @@ class BookController {
         }
         catch (e) {
             console.log(e)
-            res.status(500).json(e)
+            res.status(500).json(e.toString())
         }
     }
 
@@ -23,7 +23,7 @@ class BookController {
             return res.json(books)
         }
         catch (e) {
-            res.status(500).json(e)
+            res.status(500).json(e.toString())
         }
     }
 
@@ -34,7 +34,7 @@ class BookController {
             return res.json(book)
          }
         catch (e) {
-            res.status(500).json(e)
+            res.status(500).json(e.toString())
         }
     }
 
@@ -44,7 +44,7 @@ class BookController {
             return res.json(updatedBook)
         }
         catch (e) {
-            res.status(500).json(e)
+            res.status(500).json(e.toString())
         }
 
     }
@@ -55,7 +55,7 @@ class BookController {
             return res.json(deletedBook)
         }
         catch (e) {
-            res.status(500).json(e)
+            res.status(500).json(e.toString())
         }
 
     }

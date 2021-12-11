@@ -8,7 +8,7 @@ class UserController {
         }
         catch (e) {
             console.log(e)
-            res.status(500).json(e)
+            res.status(500).json(e.toString())
         }
     }
 
@@ -18,7 +18,7 @@ class UserController {
             res.header("auth-token", token).json({ token });
         }
         catch (e) {
-            res.status(500).json(e)
+            res.status(500).json(e.toString())
         }
     }
 
@@ -28,7 +28,7 @@ class UserController {
             return res.json(users)
         }
         catch (e) {
-            res.status(500).json(e)
+            res.status(500).json(e.toString())
         }
     }
 
@@ -39,7 +39,7 @@ class UserController {
             return res.json(user)
          }
         catch (e) {
-            res.status(500).json(e)
+            res.status(500).json(e.toString())
         }
     }
 
@@ -49,7 +49,7 @@ class UserController {
             return res.json(updatedUser)
         }
         catch (e) {
-            res.status(500).json(e)
+            res.status(500).json(e.toString())
         }
 
     }
@@ -60,7 +60,7 @@ class UserController {
             return res.json(deletedUser)
         }
         catch (e) {
-            res.status(500).json(e)
+            res.status(500).json(e.toString())
         }
 
     }
