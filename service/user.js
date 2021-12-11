@@ -21,24 +21,29 @@ class UserService {
     async login(email, password) {
 
         if (!email) throw new Error("Email not specified")
-        const user = await User.findOne({email: email});
+        const user = await User.findOne({ email: email });
         if (!user) throw new Error("User with specified email does not exist")
         const validPassword = await bcrypt.compare(password, user.password);
         if (!validPassword) throw new Error("Password or Email is not correct")
         // create token
-        return jwt.sign(
+        const token = jwt.sign(
             // payload data
+            {
+                role: user.role,
+                id: user._id,
+            },
+            process.env.TOKEN_SECRET,
+            { expiresIn: "72h" }
+        );
+        return (
             {
                 firstname: user.firstname,
                 lastname: user.lastname,
                 email: user.email,
                 role: user.role,
                 id: user._id,
-                
-            },
-            process.env.TOKEN_SECRET,
-            { expiresIn: "72h" }
-        );
+                token
+            })
     }
 
     async getAll() {
@@ -61,8 +66,8 @@ class UserService {
 
 
     async delete(id) {
-            if (!id) throw new Error("User Id not specified")
-            return await User.findByIdAndDelete(id)
+        if (!id) throw new Error("User Id not specified")
+        return await User.findByIdAndDelete(id)
     }
 
 }
