@@ -14,7 +14,7 @@ class UserController {
 
     async token(req, res) {
         try {
-            const user = await UserService.token(req.body.token) 
+            const user = await UserService.token(req.params.token) 
             res.header("auth-token", user.token).json(user);
         }
         catch (e) {

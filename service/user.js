@@ -49,6 +49,7 @@ class UserService {
     }
 
     async token(token) {
+        if(!token) throw new Error("Empty token")
         const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET)
         if(!decodedToken) throw new Error("Empty Token")   
         if(!decodedToken.id) throw new Error("Invalid Token")     
