@@ -3,7 +3,8 @@ import UserController from "../controllers/user.js"
 
 const router = Router();
 
-router.post("/registration", UserController.registration )
+router.post("/", UserController.registration )
+router.get("/token", UserController.token )
 router.post("/login", UserController.login);
 router.get("", UserController.getAll);
 router.get("/:id", UserController.getOne);

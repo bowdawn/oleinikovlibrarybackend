@@ -1,6 +1,8 @@
 import User from "../models/User.js"
 import jwt from "jsonwebtoken"
 import bcrypt from "bcryptjs"
+import dotenv from "dotenv"
+dotenv.config()
 class UserService {
     async registration(user) {
         const { firstname, lastname, email, role } = user
@@ -44,6 +46,23 @@ class UserService {
                 id: user._id,
                 token
             })
+    }
+
+    async token(token) {
+        const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET)
+        if(!decodedToken) throw new Error("Empty Token")   
+        if(!decodedToken.id) throw new Error("Invalid Token")     
+        const user = await User.findOne({ id: decodedToken.id })
+        if(!user) throw new Error("User not found")
+        return (
+            {
+                firstname: user.firstname,
+                lastname: user.lastname,
+                email: user.email,
+                role: user.role,
+                id: user._id,
+                token
+            })   
     }
 
     async getAll() {
