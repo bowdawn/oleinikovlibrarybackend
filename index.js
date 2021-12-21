@@ -1,9 +1,10 @@
 import  express  from "express";
 import dotenv from "dotenv"
-import book from "./routes/book.js";
-import user from "./routes/user.js";
-import root from "./routes/root.js";
-//import auth from "./middleware/validate-token.js"
+import publicBook from "./routes/public/book.js";
+import privateBook from "./routes/private/book.js";
+import user from "./routes/public/user.js";
+import root from "./routes/public/root.js";
+import auth from "./middleware/validate-token.js"
 import connectToDatabase from "./database/mongodb.js"
 import fileUpload from 'express-fileupload';
 import cors from 'cors';
@@ -17,8 +18,8 @@ app.use(express.json());
 app.use(fileUpload({}))
 
 app.use("/api/user", user)
-app.use("/api/book", book)
-//app.use("/api/book", auth, book)
+app.use("/api/book", publicBook)
+app.use("/api/book", auth, privateBook)
 app.use("/api", root);
 app.use("/", root);
 
