@@ -14,6 +14,23 @@ class BookService {
         })
     }
 
+    async list(pictures) {
+        const result = []
+        await Promise.all(pictures.map(async (picture) => 
+        {
+            const response = await createAndUpload(picture)
+            let emptyBook = await Book.create({
+                author: "default",
+                title: "default",
+                language: "default",
+                picture: "https://drive.google.com/uc?export=view&id=" +  response.data.id
+            })
+            result.push(emptyBook)
+        }
+        ))
+        return result
+    }
+
 
     async getAll() {
         return await Book.find()

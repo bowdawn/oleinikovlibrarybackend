@@ -3,11 +3,21 @@ import BookService from "../service/book.js"
 class BookController {
     async create(req, res) {
         try {
-            //console.log(req)
-            console.log(req.body)
-            console.log(req.files)
             const book = await BookService.create(req.body, req.files.picture)
             res.status(200).json(book)
+        }
+        catch (e) {
+            console.log(e)
+            res.status(500).json(e.toString())
+        }
+    }
+
+    async list(req, res) {
+        try {
+            console.log(req.body)
+            console.log(req.files)
+            const list = await BookService.list(req.files.pictures)
+            res.status(200).json(list)
         }
         catch (e) {
             console.log(e)
