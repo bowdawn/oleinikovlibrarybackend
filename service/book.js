@@ -32,9 +32,17 @@ class BookService {
     }
 
 
-    async getAll() {
-        return await Book.find()
+    async getAll(limit = 12, page = 1) {
+        const result = await Book.paginate({}, {sort: "title", page: page, limit: limit} )
+        
+        return result
     }
+
+    async getLanguages() {
+        const result = await Book.find().distinct("language")
+        return result
+    }
+
 
     async getOne(id) {
         if (!id) throw new Error("Book Id not specified")

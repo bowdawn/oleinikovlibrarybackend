@@ -29,8 +29,18 @@ class BookController {
 
     async getAll(req, res) {
         try { 
-            const books = await BookService.getAll()
-            return res.json(books)
+            const pagination = await BookService.getAll(parseInt(req.query.limit), parseInt(req.query.page))
+            return res.json(pagination)
+        }
+        catch (e) {
+            res.status(500).json(e.toString())
+        }
+    }
+
+    async getLanguages(req, res) {
+        try { 
+            const languages = await BookService.getLanguages()
+            return res.json(languages)
         }
         catch (e) {
             res.status(500).json(e.toString())

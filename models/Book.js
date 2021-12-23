@@ -1,4 +1,5 @@
 import mongoose from "mongoose"
+import mongoosePaginate from "mongoose-paginate"
 
 const Book = new mongoose.Schema(
     {
@@ -8,5 +9,7 @@ const Book = new mongoose.Schema(
         picture: {type: String}
     }
 )
+
+Book.plugin(mongoosePaginate)
 
 export default mongoose.model("Book", Book )

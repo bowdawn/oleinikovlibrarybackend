@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv"
 dotenv.config()
+
 const verifyToken = (req, res, next) => {
     try {
         const token = req.header("auth").split(' ')[1]
