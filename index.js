@@ -2,7 +2,7 @@ import  express  from "express";
 import dotenv from "dotenv"
 import publicBook from "./routes/public/book.js";
 import privateBook from "./routes/private/book.js";
-import user from "./routes/public/user.js";
+import publicUser from "./routes/public/user.js";
 import root from "./routes/public/root.js";
 import auth from "./middleware/validate-token.js"
 import connectToDatabase from "./database/mongodb.js"
@@ -22,7 +22,7 @@ app.use(cors({}));
 app.use(express.json());
 app.use(fileUpload({}))
 
-app.use("/api/user", user)
+app.use("/api/user", publicUser)
 app.use("/api/book", publicBook)
 app.use("/api/book", auth, privateBook)
 app.use("/api", root);

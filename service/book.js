@@ -32,8 +32,9 @@ class BookService {
     }
 
 
-    async getAll(limit = 12, page = 1) {
-        const result = await Book.paginate({}, {sort: "title", page: page, limit: limit} )
+    async getAll(limit = 12, page = 1, sort = "" ) {
+        sort.split(",").join(" ")
+        const result = await Book.paginate({}, {sort:sort.split(",").join(" ") , page: page, limit: limit} )
         
         return result
     }
