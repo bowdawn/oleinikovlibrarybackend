@@ -29,9 +29,8 @@ class BookController {
 
     async getAll(req, res) {
         try { 
-            console.log(req.query.sort)
-            const pagination = await BookService.getAll(parseInt(req.query.limit), parseInt(req.query.page), req.query.sort)
-            return res.json(pagination)
+            const books = await BookService.getAll(parseInt(req.query.limit), parseInt(req.query.page), req.query.sort, JSON.parse(req.query.filter))
+            return res.json(books)
         }
         catch (e) {
             res.status(500).json(e.toString())
