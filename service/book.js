@@ -36,7 +36,7 @@ class BookService {
         let query =  {
             title:{'$regex' : filter.title ? filter.title : "(.)*" , '$options' : 'i'},
             author:{'$regex' : filter.author ? filter.author : "(.)*" , '$options' : 'i'},
-            language:{'$regex' :filter.language ? filter.language : "(.)*" , '$options' : 'i'}
+            ...(filter.language && {language: filter.language})
         }
         const result = await Book.paginate(
             query,
