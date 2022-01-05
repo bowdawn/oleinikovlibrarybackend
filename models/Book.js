@@ -3,14 +3,20 @@ import mongoosePaginate from "mongoose-paginate"
 
 const Book = new mongoose.Schema(
     {
-        author: {type: String, required: true},
-        title: {type: String, required: true},
-        language: {type: String, required: true},
-        picture: {type: String}, 
+        author: { type: String, required: true },
+        title: { type: String, required: true },
+        language: { type: String, required: true },
+        picture: { type: String },
         tags: {
             type: [String],
             set: toSet
-          }
+        },
+        isDeleted: {
+            type: Boolean
+        },
+        isPublic: {
+            type: Boolean
+        }
     }
 )
 
@@ -20,6 +26,6 @@ function toSet(a) {
 
 Book.plugin(mongoosePaginate)
 
-export default mongoose.model("Book", Book )
+export default mongoose.model("Book", Book)
 
 
