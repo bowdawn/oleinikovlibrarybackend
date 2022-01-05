@@ -57,7 +57,11 @@ class BookService {
 
     async update(book) {
         if (!book._id) throw new Error("Book Id not specified")
+        console.log(book)
+       // book = {...book, tags: book.tabs}
+        console.log(book)
         const updatedUser = await Book.findByIdAndUpdate(book._id, book, { new: true })
+        console.log(updatedUser)
         return updatedUser
     }
 
