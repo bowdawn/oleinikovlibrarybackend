@@ -1,10 +1,10 @@
 import Book from "../models/Book.js"
-import createAndUpload from "../googledriveapi/upload.js"
+import uploadPicture from "../googledriveapi/uploadPicture.js"
 
 class BookService {
     async create(book, picture) {
 
-        const response = await createAndUpload(picture)
+        const response = await uploadPicture(picture)
 
         return await Book.create({
             author: book.author,
@@ -17,7 +17,7 @@ class BookService {
     async list(pictures) {
         const result = []
         await Promise.all(pictures.map(async (picture) => {
-            const response = await createAndUpload(picture)
+            const response = await uploadPicture(picture)
             let emptyBook = await Book.create({
                 author: "default",
                 title: "default",
@@ -55,10 +55,23 @@ class BookService {
         return await Book.findById(id);
     }
 
-    async update(book) {
+    async update(book, pdf) {
+        console.log("update")
         if (!book._id) throw new Error("Book Id not specified")
-        const updatedUser = await Book.findByIdAndUpdate(book._id, book, { new: true })
-        return updatedUser
+        let pdfDownload = ""
+        
+        if (pdf){
+            const response = await uploadPicture(pdf)
+            pdfDownload = "https://drive.google.com/uc?id=" + response.data.id + "&export=download"
+        } 
+        if (book.pdf){
+            console.log(book.pdf)
+            pdfDownload = book.pdf
+        }
+        console.log(pdfDownload)
+        const updatedBook = await Book.findByIdAndUpdate(book._id,{...book, pdf: pdfDownload, tags: book.tags.split(",")}, { new: true })
+        console.log(updatedBook)
+        return updatedBook
     }
 
 

@@ -16,7 +16,8 @@ const Book = new mongoose.Schema(
         },
         isPublic: {
             type: Boolean
-        }
+        }, 
+        pdf: {type: String}
     }
 )
 
