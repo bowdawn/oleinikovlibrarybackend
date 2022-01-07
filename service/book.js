@@ -1,5 +1,6 @@
 import Book from "../models/Book.js"
 import uploadPicture from "../googledriveapi/uploadPicture.js"
+import deleteFile from "../googledriveapi/deleteFile.js"
 
 class BookService {
     async create(book, picture) {
@@ -58,19 +59,24 @@ class BookService {
     async update(book, pdf) {
         console.log("update")
         if (!book._id) throw new Error("Book Id not specified")
-        let pdfDownload = ""
-        
+        let pdfDownload = book.pdf
+        const current = await Book.findById(book._id)
         if (pdf){
+            console.log("pdf")
+            if(current.pdf){
+                console.log("book-pdf")
+                const fileId = current.pdf.substring(0, current.pdf.length - 16).substring(31)
+                console.log(fileId)
+                await deleteFile(fileId)
+            }
+            
             const response = await uploadPicture(pdf)
             pdfDownload = "https://drive.google.com/uc?id=" + response.data.id + "&export=download"
         } 
-        if (book.pdf){
-            console.log(book.pdf)
-            pdfDownload = book.pdf
-        }
-        console.log(pdfDownload)
-        const updatedBook = await Book.findByIdAndUpdate(book._id,{...book, pdf: pdfDownload, tags: book.tags.split(",")}, { new: true })
-        console.log(updatedBook)
+        
+        const tags = book.tags.split(",").filter(tag => tag !== "")
+        const updatedBook = await Book.findByIdAndUpdate(book._id,{...book, pdf: pdfDownload, tags:  tags  }, { new: true })
+      
         return updatedBook
     }
 

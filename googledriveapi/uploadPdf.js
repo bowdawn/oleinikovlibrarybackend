@@ -1,6 +1,7 @@
 import driveService from "./auth.js"
 import dotenv from "dotenv"
 import stream from 'stream'
+import fs from "fs"
 dotenv.config()
 const { Duplex} = stream
 
@@ -15,18 +16,18 @@ function bufferToStream(buffer) {
 
 export default async function uploadPdf(pdf) {
     try{
-    console.log(pdf)
-    let media = {
-      mimeType: "application/pdf",
-      body : bufferToStream(pdf.data)
-    }
     let response = await driveService.files.create({
-      resource: {
-        "name": pdf.name ,
-        "parents" : [process.env.DRIVE_DIRECTORY]
+      requestBody: {
+        parents : [process.env.DRIVE_DIRECTORY],
+        
+      
       },
-      media: media,
-      fields: 'id'
+      
+      media: {
+        mimeType: pdf.mimetype,
+        body : bufferToStream(pdf.data)
+      },
+    
     })
    
     switch(response.status){

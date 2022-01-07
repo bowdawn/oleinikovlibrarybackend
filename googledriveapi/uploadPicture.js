@@ -1,5 +1,4 @@
 import driveService from "./auth.js"
-import fs from "fs"
 import dotenv from "dotenv"
 import stream from 'stream'
 dotenv.config()
@@ -18,7 +17,7 @@ export default async function uploadPicture(picture) {
     try{
     console.log(picture)
     let media = {
-      mimeType: "image/png",
+      mimeType: picture.mimetype,
       body : bufferToStream(picture.data)
     }
     let response = await driveService.files.create({
