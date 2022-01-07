@@ -17,7 +17,11 @@ const Book = new mongoose.Schema(
         isPublic: {
             type: Boolean
         }, 
-        pdf: {type: String}
+        isComplete: {
+            type: Boolean
+        },
+        pdf: {type: String},
+        
     }
 )
 

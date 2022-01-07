@@ -58,33 +58,45 @@ class BookService {
 
     async update(book, pdf) {
         console.log("update")
-        if (!book._id) throw new Error("Book Id not specified")
-        let pdfDownload = book.pdf
         const current = await Book.findById(book._id)
-        if (pdf) {
-            console.log("pdf")
-            console.log(current)
-            if (current.pdf) {
+        console.log(current)
+        if (current.isComplete) {
+            console.log("complete")
+            console.log(book.isComplete)
+            const updatedBook = await Book.findByIdAndUpdate(book._id, {  isComplete: book.isComplete}, { new: true })
+            return updatedBook
+        } else {
+
+
+            if (!book._id) throw new Error("Book Id not specified")
+            let pdfDownload = book.pdf
+            console.log("complete")
+            console.log(book.isComplete)
+            if (pdf) {
+                console.log("pdf")
+                console.log(current)
+                if (current.pdf) {
+                    console.log("book-pdf")
+                    const fileId = current.pdf.substring(0, current.pdf.length - 16).substring(31)
+                    console.log(fileId)
+                    await deleteFile(fileId)
+                }
+
+                const response = await uploadPicture(pdf)
+                pdfDownload = "https://drive.google.com/uc?id=" + response.data.id + "&export=download"
+            }
+            if (current.pdf && book.pdf === "") {
                 console.log("book-pdf")
                 const fileId = current.pdf.substring(0, current.pdf.length - 16).substring(31)
                 console.log(fileId)
                 await deleteFile(fileId)
             }
 
-            const response = await uploadPicture(pdf)
-            pdfDownload = "https://drive.google.com/uc?id=" + response.data.id + "&export=download"
-        }
-        if (current.pdf && book.pdf === "") {
-            console.log("book-pdf")
-            const fileId = current.pdf.substring(0, current.pdf.length - 16).substring(31)
-            console.log(fileId)
-            await deleteFile(fileId)
-        }
+            const tags = book.tags.split(",").filter(tag => tag !== "")
+            const updatedBook = await Book.findByIdAndUpdate(book._id, { ...book, pdf: pdfDownload == "undefined" ? "" :  pdfDownload, tags: tags }, { new: true })
 
-        const tags = book.tags.split(",").filter(tag => tag !== "")
-        const updatedBook = await Book.findByIdAndUpdate(book._id, { ...book, pdf: pdfDownload, tags: tags }, { new: true })
-
-        return updatedBook
+            return updatedBook
+        }
     }
 
 
