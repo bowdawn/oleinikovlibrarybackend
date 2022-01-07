@@ -34,10 +34,10 @@ class BookService {
 
     async getAll(limit = 12, page = 1, sort = "", filter = { title: "", author: "", language: "" }) {
         sort.split(",").join(" ")
-        let query =  {
-            title:{'$regex' : filter.title ? filter.title : "(.)*" , '$options' : 'i'},
-            author:{'$regex' : filter.author ? filter.author : "(.)*" , '$options' : 'i'},
-            ...(filter.language && {language: filter.language})
+        let query = {
+            title: { '$regex': filter.title ? filter.title : "(.)*", '$options': 'i' },
+            author: { '$regex': filter.author ? filter.author : "(.)*", '$options': 'i' },
+            ...(filter.language && { language: filter.language })
         }
         const result = await Book.paginate(
             query,
@@ -61,22 +61,29 @@ class BookService {
         if (!book._id) throw new Error("Book Id not specified")
         let pdfDownload = book.pdf
         const current = await Book.findById(book._id)
-        if (pdf){
+        if (pdf) {
             console.log("pdf")
-            if(current.pdf){
+            console.log(current)
+            if (current.pdf) {
                 console.log("book-pdf")
                 const fileId = current.pdf.substring(0, current.pdf.length - 16).substring(31)
                 console.log(fileId)
                 await deleteFile(fileId)
             }
-            
+
             const response = await uploadPicture(pdf)
             pdfDownload = "https://drive.google.com/uc?id=" + response.data.id + "&export=download"
-        } 
-        
+        }
+        if (current.pdf && book.pdf === "") {
+            console.log("book-pdf")
+            const fileId = current.pdf.substring(0, current.pdf.length - 16).substring(31)
+            console.log(fileId)
+            await deleteFile(fileId)
+        }
+
         const tags = book.tags.split(",").filter(tag => tag !== "")
-        const updatedBook = await Book.findByIdAndUpdate(book._id,{...book, pdf: pdfDownload, tags:  tags  }, { new: true })
-      
+        const updatedBook = await Book.findByIdAndUpdate(book._id, { ...book, pdf: pdfDownload, tags: tags }, { new: true })
+
         return updatedBook
     }
 
