@@ -25,7 +25,7 @@ app.use(fileUpload({}))
 
 app.use("/api/user", publicUser)
 app.use("/api/user", auth, privateUser)
-app.use("/api/book", publicBook)
+app.use("/api/public/book", publicBook)
 app.use("/api/book", auth, privateBook)
 app.use("/api", root);
 app.use("/", root);

@@ -29,6 +29,7 @@ class BookController {
 
     async getAll(req, res) {
         try { 
+            console.log(req.query.filter)
             const books = await BookService.getAll(parseInt(req.query.limit), parseInt(req.query.page), req.query.sort, JSON.parse(req.query.filter))
             return res.json(books)
         }
@@ -57,6 +58,48 @@ class BookController {
             res.status(500).json(e.toString())
         }
     }
+
+    async getAllPublic(req, res) {
+        try { 
+            const books = await BookService.getAll(parseInt(req.query.limit), parseInt(req.query.page), req.query.sort, JSON.parse(req.query.filter))
+            return res.json(books)
+        }
+        catch (e) {
+            res.status(500).json(e.toString())
+        }
+    }
+
+    async getLanguagesPublic(req, res) {
+        try { 
+            const languages = await BookService.getLanguagesPublic()
+            return res.json(languages)
+        }
+        catch (e) {
+            res.status(500).json(e.toString())
+        }
+    }
+
+    async getOnePublic(req, res) {
+        try {
+            const { id } = req.params
+            const book = await BookService.getOnePublic(id);
+            return res.json(book)
+         }
+        catch (e) {
+            res.status(500).json(e.toString())
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
 
     async update(req, res) {
         try { 
