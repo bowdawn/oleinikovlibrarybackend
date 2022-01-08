@@ -52,7 +52,7 @@ class BookService {
     }
 
     async getLanguages() {
-        const result = await Book.find().distinct("language")
+        const result = await Book.find({isDeleted:  {$in: [null, false]  }}).distinct("language")
         return result
     }
 
@@ -68,12 +68,12 @@ class BookService {
     }
 
     async getLanguagesPublic() {
-        const result = await Book.find({isPublic: true}).distinct("language")
+        const result = await Book.find({isPublic: true, isDeleted:  {$in: [null, false]  }}).distinct("language")
         return result
     }
 
     async getTagsPublic() {
-        const result = await Book.find({isPublic: true}).distinct("tags")
+        const result = await Book.find({isPublic: true, isDeleted:  {$in: [null, false]  }}).distinct("tags")
         return result
     }
 
