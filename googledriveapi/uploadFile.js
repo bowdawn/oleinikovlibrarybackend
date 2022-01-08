@@ -13,16 +13,16 @@ function bufferToStream(buffer) {
 }
 
 
-export default async function uploadPicture(picture) {
+export default async function uploadFile(file) {
     try{
-    console.log(picture)
+    console.log(file)
     let media = {
-      mimeType: picture.mimetype,
-      body : bufferToStream(picture.data)
+      mimeType: file.mimetype,
+      body : bufferToStream(file.data)
     }
     let response = await driveService.files.create({
       resource: {
-        "name": picture.name ,
+        "name": file.name ,
         "parents" : [process.env.DRIVE_DIRECTORY]
       },
       media: media,

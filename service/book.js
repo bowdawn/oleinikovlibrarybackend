@@ -1,24 +1,34 @@
 import Book from "../models/Book.js"
-import uploadPicture from "../googledriveapi/uploadPicture.js"
+import uploadFile from "../googledriveapi/uploadFile.js"
 import deleteFile from "../googledriveapi/deleteFile.js"
 
 class BookService {
-    async create(book, picture) {
-
-        const response = await uploadPicture(picture)
-
+    async create(book, picture, pdf) {
+  
+        const response = await uploadFile(picture)
+        let pdfDownload = "" 
+        if (pdf) {
+            let result = await uploadFile(pdf)
+            pdfDownload = "https://drive.google.com/uc?id=" + result.data.id + "&export=download"
+        }
+        const tags = book.tags.split(",").filter(tag => tag !== "")
         return await Book.create({
-            author: book.author,
+            picture: "https://drive.google.com/uc?export=view&id=" + response.data.id,
             title: book.title,
+            author: book.author,
             language: book.language,
-            picture: "https://drive.google.com/uc?export=view&id=" + response.data.id
+            isDeleted: book.isDeleted,
+            isPublic: book.isPublic,
+            isComplete: book.isComplete,
+            tags: tags,
+            pdf: pdfDownload
         })
     }
 
     async list(pictures) {
         const result = []
         await Promise.all(pictures.map(async (picture) => {
-            const response = await uploadPicture(picture)
+            const response = await uploadFile(picture)
             let emptyBook = await Book.create({
                 author: "default",
                 title: "default",
@@ -87,12 +97,11 @@ class BookService {
 
 
     async update(book, pdf) {
-        console.log("update")
+      
         const current = await Book.findById(book._id)
-        console.log(current)
+       
         if (current.isComplete) {
-            console.log("complete")
-            console.log(book.isComplete)
+           
             const updatedBook = await Book.findByIdAndUpdate(book._id, {  isComplete: book.isComplete}, { new: true })
             return updatedBook
         } else {
@@ -100,31 +109,25 @@ class BookService {
 
             if (!book._id) throw new Error("Book Id not specified")
             let pdfDownload = book.pdf
-            console.log("complete")
-            console.log(book.isComplete)
+           
             if (pdf) {
-                console.log("pdf")
-                console.log(current)
+            
                 if (current.pdf) {
-                    console.log("book-pdf")
+                   
                     const fileId = current.pdf.substring(0, current.pdf.length - 16).substring(31)
-                    console.log(fileId)
+            
                     await deleteFile(fileId)
                 }
 
-                const response = await uploadPicture(pdf)
+                const response = await uploadFile(pdf)
                 pdfDownload = "https://drive.google.com/uc?id=" + response.data.id + "&export=download"
             }
-            if (current.pdf && book.pdf === "") {
-                console.log("book-pdf")
+            if (current.pdf && book.pdf === "") {        
                 const fileId = current.pdf.substring(0, current.pdf.length - 16).substring(31)
-                console.log(fileId)
                 await deleteFile(fileId)
             }
-
             const tags = book.tags.split(",").filter(tag => tag !== "")
             const updatedBook = await Book.findByIdAndUpdate(book._id, { ...book, pdf: pdfDownload == "undefined" ? "" :  pdfDownload, tags: tags }, { new: true })
-
             return updatedBook
         }
     }
