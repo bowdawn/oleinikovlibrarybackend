@@ -41,10 +41,10 @@ class BookService {
             ...(filter.deleted !== "all" && (filter.deleted === "only" || filter.deleted === "")  && { isDeleted: filter.deleted  === "only" ?  true : {$in: [null, false]  }}),
             ...(filter.public && (filter.public === "public" || filter.public === "private") && { isPublic: filter.public == "public" ? true :  {$in: [null, false]  } }),
             ...(filter.complete && (filter.complete === "complete" || filter.complete === "incomplete") && { isComplete: filter.complete == "complete" ? true :  {$in: [null, false]  } }),
+            ...(filter.tags && { tags: { $in: filter.tags.split(",")} }),
             ...(filter.pdf && (filter.pdf === "exist" || filter.pdf === "dne") && { pdf: filter.pdf  === "exist"  ? {'$regex' : "drive.google.com" } : {$in: [null, "", undefined , "undefined"]  }  }),
         }
-        console.log(filter)
-        console.log(query)
+     
         const result = await Book.paginate(
             query,
             { sort: sort.split(",").join(" "), page: page, limit: limit })
@@ -56,6 +56,11 @@ class BookService {
         return result
     }
 
+    async getTags() {
+        const result = await Book.find( {isDeleted:  {$in: [null, false]  }} ).distinct("tags")
+        return result
+    }
+
 
     async getOne(id) {
         if (!id) throw new Error("Book Id not specified")
@@ -64,6 +69,11 @@ class BookService {
 
     async getLanguagesPublic() {
         const result = await Book.find({isPublic: true}).distinct("language")
+        return result
+    }
+
+    async getTagsPublic() {
+        const result = await Book.find({isPublic: true}).distinct("tags")
         return result
     }
 

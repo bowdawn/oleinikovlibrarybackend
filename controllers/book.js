@@ -48,6 +48,16 @@ class BookController {
         }
     }
 
+    async getTags(req, res) {
+        try { 
+            const tags = await BookService.getTags()
+            return res.json(tags)
+        }
+        catch (e) {
+            res.status(500).json(e.toString())
+        }
+    }
+
     async getOne(req, res) {
         try {
             const { id } = req.params
@@ -73,6 +83,16 @@ class BookController {
         try { 
             const languages = await BookService.getLanguagesPublic()
             return res.json(languages)
+        }
+        catch (e) {
+            res.status(500).json(e.toString())
+        }
+    }
+
+    async getTagsPublic(req, res) {
+        try { 
+            const tags = await BookService.getTagsPublic()
+            return res.json(tags)
         }
         catch (e) {
             res.status(500).json(e.toString())
