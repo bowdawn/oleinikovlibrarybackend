@@ -76,7 +76,7 @@ class BookService {
      
         const result = await Book.paginate(
             query,
-            { sort: sort.split(",").join(" "), page: page, limit: limit })
+            { sort: sort.split(",").join(" "), page: page, limit: limit, select: "author title language picture tags isPdf"})
         return result
     }
 
