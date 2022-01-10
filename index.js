@@ -13,14 +13,14 @@ import cors from 'cors';
 dotenv.config()
 const PORT = process.env.PORT || 5000;
 
-var allowedOrigins = ['http://localhost:3000',
-                      'https://oleinikovlibrarybackend.vercel.app'];
+
 
 const app = express();
 
 app.use(cors({}));
 
-app.use(express.json());
+app.use(express.json({limit: '50mb'}));
+app.use(express.urlencoded({limit: '50mb', extended: true}));
 app.use(fileUpload({}))
 
 app.use("/api/user", publicUser)
