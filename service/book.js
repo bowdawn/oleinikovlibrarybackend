@@ -61,6 +61,25 @@ class BookService {
         return result
     }
 
+    async getAllPublic(limit = 12, page = 1, sort = "", filter = { title: "", author: "", language: "", deleted: "", public: "", complete: "", tags: "", pdf: "" }, ) {
+        sort.split(",").join(" ")
+        let query = {
+            title: { '$regex': filter.title ? filter.title : "(.)*", '$options': 'i' },
+            author: { '$regex': filter.author ? filter.author : "(.)*", '$options': 'i' },
+            ...(filter.language && { language: filter.language }),
+            ...(filter.deleted !== "all" && (filter.deleted === "only" || filter.deleted === "")  && { isDeleted: filter.deleted  === "only" ?  true : {$in: [null, false]  }}),
+            ...(true && { isPublic:   true }),
+            
+            ...(filter.tags && { tags: { $in: filter.tags.split(",")} }),
+            ...(filter.pdf && (filter.pdf === "exist" || filter.pdf === "dne") && { pdf: filter.pdf  === "exist"  ? {'$regex' : "drive.google.com" } : {$in: [null, "", undefined , "undefined"]  }  }),
+        }
+     
+        const result = await Book.paginate(
+            query,
+            { sort: sort.split(",").join(" "), page: page, limit: limit })
+        return result
+    }
+
     async getLanguages() {
         const result = await Book.find({isDeleted:  {$in: [null, false]  }}).distinct("language")
         return result
