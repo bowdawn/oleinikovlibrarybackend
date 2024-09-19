@@ -28,6 +28,7 @@ export default async function uploadFile(file) {
       media: media,
       fields: 'id'
     })
+    console.log(response)
    
     switch(response.status){
       case(200):

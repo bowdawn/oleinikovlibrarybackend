@@ -21,49 +21,53 @@ class UserService {
     }
 
     async login(email, password) {
-
-        if (!email) throw new Error("Email not specified")
+        if (!email) throw new Error("Email not specified");
+    
         const user = await User.findOne({ email: email });
-        if (!user) throw new Error("User with specified email does not exist")
+        if (!user) throw new Error("User with specified email does not exist");
+    
         const validPassword = await bcrypt.compare(password, user.password);
-        if (!validPassword) throw new Error("Password or Email is not correct")
-        // create token
+        if (!validPassword) throw new Error("Password or Email is not correct");
+    
+        // Create token
         const token = jwt.sign(
-            // payload data
             {
                 role: user.role,
-                id: user._id,
+                id: user._id, // Use _id to match MongoDB standard
             },
             process.env.TOKEN_SECRET,
             { expiresIn: "72h" }
         );
-        return (
-            {
-                firstname: user.firstname,
-                lastname: user.lastname,
-                email: user.email,
-                role: user.role,
-                id: user._id,
-                token
-            })
+    
+        return {
+            firstname: user.firstname,
+            lastname: user.lastname,
+            email: user.email,
+            role: user.role,
+            id: user._id, // Use _id here as well
+            token
+        };
     }
-
+    
     async token(token) {
-        if(!token) throw new Error("Empty token")
-        const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET)
-        if(!decodedToken) throw new Error("Empty Token")   
-        if(!decodedToken.id) throw new Error("Invalid Token")     
-        const user = await User.findOne({ id: decodedToken.id })
-        if(!user) throw new Error("User not found")
-        return (
-            {
-                firstname: user.firstname,
-                lastname: user.lastname,
-                email: user.email,
-                role: user.role,
-                id: user._id,
-                token
-            })   
+        if (!token) throw new Error("Empty token");
+    
+        const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
+        if (!decodedToken) throw new Error("Invalid Token");
+        if (!decodedToken.id) throw new Error("Invalid Token ID");
+    
+        // Use _id to find the user
+        const user = await User.findOne({ _id: decodedToken.id });
+        if (!user) throw new Error("User not found");
+    
+        return {
+            firstname: user.firstname,
+            lastname: user.lastname,
+            email: user.email,
+            role: user.role,
+            id: user._id, // Use _id here as well
+            token
+        };
     }
 
     async getAll() {
