@@ -30,6 +30,7 @@ app.use("/api/book", auth, privateBook)
 app.use("/api", root);
 app.use("/", root);
 
+
 async function startApp() {
   try {
       connectToDatabase()
