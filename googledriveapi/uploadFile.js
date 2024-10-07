@@ -13,33 +13,35 @@ function bufferToStream(buffer) {
 }
 
 
-export default async function uploadFile(file) {
-    try{
-    console.log(file)
-    let media = {
-      mimeType: file.mimetype,
-      body : bufferToStream(file.data)
-    }
-    let response = await driveService.files.create({
-      resource: {
-        "name": file.name ,
-        "parents" : [process.env.DRIVE_DIRECTORY]
-      },
-      media: media,
-      fields: 'id'
-    })
-    console.log(response)
-   
-    switch(response.status){
-      case(200):
-        console.log("File Created id:" , response.data.id)
-        return response 
-       
-    }}
-    catch(e) {
-        console.log(e)
-    }
+export default async function uploadFile(file) { 
+  try {
+      console.log(file);
+      let media = {
+          mimeType: file.mimetype,
+          body: bufferToStream(file.data)
+      };
+      let response = await driveService.files.create({
+          resource: {
+              "name": file.name,
+              "parents": [process.env.DRIVE_DIRECTORY]
+          },
+          media: media,
+          fields: 'id'
+      });
+
+      console.log(response);
+
+      if (response.status === 200) {
+          console.log("File Created, id:", response.data.id);
+          return response.data; // Return only the data object with the file ID
+      } else {
+          throw new Error(`Unexpected response status: ${response.status}`);
+      }
+  } catch (e) {
+      console.error("Error while uploading file:", e); 
+      throw new Error("File upload failed: " + e.message); // Rethrow the error for the service to catch
   }
+}
   
 
 

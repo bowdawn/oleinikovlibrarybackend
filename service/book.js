@@ -5,27 +5,46 @@ import { getThumbnailUrl } from "../utils.js"
 
 class BookService {
     async create(book, picture, pdf) {
-
-        const response = await uploadFile(picture)
-        let pdfDownload = ""
-        if (pdf) {
-            let result = await uploadFile(pdf)
-            pdfDownload = "https://drive.google.com/uc?id=" + result.data.id + "&export=download"
+        try {
+            // Upload picture
+            const pictureData = await uploadFile(picture);
+            if (!pictureData || !pictureData.id) {
+                throw new Error("Failed to upload picture");
+            }
+            
+            let pdfDownload = "";
+            // Upload PDF (if provided)
+            if (pdf) {
+                const pdfData = await uploadFile(pdf);
+                if (!pdfData || !pdfData.id) {
+                    throw new Error("Failed to upload PDF");
+                }
+                pdfDownload = `https://drive.google.com/uc?id=${pdfData.id}&export=download`;
+            }
+            
+            // Process tags (if any)
+            const tags = book.tags.split(",").filter(tag => tag.trim() !== "");
+    
+            console.log("Creating book...");
+    
+            // Create the book in the database
+            return await Book.create({
+                picture: `https://drive.google.com/uc?export=view&id=${pictureData.id}`,
+                title: book.title,
+                author: book.author,
+                language: book.language,
+                isDeleted: book.isDeleted,
+                isPublic: book.isPublic,
+                isComplete: book.isComplete,
+                tags: tags,
+                pdf: pdfDownload
+            });
+        } catch (error) {
+            console.error("Error creating book:", error.message);
+            throw new Error(error.message || "An error occurred while creating the book.");
         }
-        const tags = book.tags.split(",").filter(tag => tag !== "")
-        console.log("create book")
-        return await Book.create({
-            picture: "https://drive.google.com/uc?export=view&id=" + response.data.id,
-            title: book.title,
-            author: book.author,
-            language: book.language,
-            isDeleted: book.isDeleted,
-            isPublic: book.isPublic,
-            isComplete: book.isComplete,
-            tags: tags,
-            pdf: pdfDownload
-        })
     }
+    
 
     async list(pictures) {
         const result = []

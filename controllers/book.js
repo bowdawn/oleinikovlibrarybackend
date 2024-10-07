@@ -3,14 +3,12 @@ import BookService from "../service/book.js"
 class BookController {
     async create(req, res) {
         try {
-
-            const book = await BookService.create(req.body, req.files.picture, req.files.pdf)
-            console.log(book)
-            res.status(200).json(book)
-        }
-        catch (e) {
-            console.log(e)
-            res.status(500).json(e.toString())
+            const book = await BookService.create(req.body, req.files.picture, req.files.pdf);
+            console.log("Book created:", book);
+            res.status(200).json(book);  // Send the book data back as the response
+        } catch (e) {
+            console.error("Error in create route:", e);
+            res.status(500).json({ error: e.message });  // Send the error message back in the response
         }
     }
 
