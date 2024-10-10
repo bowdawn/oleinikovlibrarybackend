@@ -11,8 +11,8 @@ import fileUpload from 'express-fileupload';
 import cors from 'cors';
 import uploadFile from "./googledriveapi/uploadFile.js"
 import  multer   from 'multer';
-// import fs  from 'fs';
-// import path from 'path';
+import fs  from 'fs';
+import path from 'path';
 
 const app = express();
 app.use(cors({}));
