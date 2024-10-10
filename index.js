@@ -28,6 +28,7 @@ const chunksStorage = {};
 
 // Set up multer for in-memory storage
 const upload = multer({ storage: multer.memoryStorage() });
+app.use(upload.single('fileChunk'));
 
 // Route Definitions
 app.use("/api/user", publicUser);
@@ -38,7 +39,7 @@ app.use("/api", root);
 app.use("/", root);
 
 // Upload endpoint for file chunks
-app.post('/api/book/upload', upload.single('fileChunk'), (req, res) => {
+app.post('/api/book/upload', (req, res) => {
   console.log('Received upload request'); // Debugging statement
 
   if (!req.file) {

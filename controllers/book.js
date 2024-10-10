@@ -4,7 +4,9 @@ class BookController {
   
     async create(req, res) {
         try {
-            const book = await BookService.create(req.body, req.files.picture);
+            console.log(req.body)
+           
+            const book = await BookService.create(req.body);
             console.log("Book created:", book);
             res.status(200).json(book);  // Send the book data back as the response
         } catch (e) {
@@ -15,8 +17,7 @@ class BookController {
 
     async list(req, res) {
         try {
-            console.log(req.body)
-            console.log(req.files)
+           
             const list = await BookService.list(req.files.pictures)
             res.status(200).json(list)
         }

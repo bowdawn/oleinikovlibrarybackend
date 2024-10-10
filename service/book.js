@@ -5,31 +5,16 @@ import { getThumbnailUrl } from "../utils.js"
 
 
 class BookService {
-
-
-
-    async create(book, picture) {
+    async create(book) {
     try {
-        // Upload picture
-        const pictureData = await uploadFile(picture);
-        if (!pictureData || !pictureData.id) {
-            throw new Error("Failed to upload picture");
-        }
-
-        console.log(book)
         let pdfDownload = ""
         if (book.pdf) {
             pdfDownload = `https://drive.google.com/uc?id=${book.pdf}&export=download`;
         }
-
-        // Process tags (if any)
         const tags = book.tags.split(",").filter(tag => tag.trim() !== "");
-
         console.log("Creating book...");
-
-        // Create the book in the database
         return await Book.create({
-            picture: `https://drive.google.com/uc?export=view&id=${pictureData.id}`,
+            picture: book.picture,
             title: book.title,
             author: book.author,
             language: book.language,
