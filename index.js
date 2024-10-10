@@ -33,7 +33,7 @@ app.use("/api/book", auth, privateBook)
 app.use("/api", root);
 app.use("/", root);
 
-// const upload = multer({ dest: 'uploads/' });
+const upload = multer({ dest: 'tmp/' });
 
 // // Endpoint to upload chunks
 // app.post('/api/book/upload', upload.single('fileChunk'), (req, res) => {
