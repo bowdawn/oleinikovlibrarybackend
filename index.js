@@ -9,8 +9,8 @@ import auth from "./middleware/validate-token.js"
 import connectToDatabase from "./database/mongodb.js"
 import fileUpload from 'express-fileupload';
 import cors from 'cors';
-// import uploadFile from "./googledriveapi/uploadFile.js"
-// import  multer   from 'multer';
+import uploadFile from "./googledriveapi/uploadFile.js"
+import  multer   from 'multer';
 // import fs  from 'fs';
 // import path from 'path';
 
