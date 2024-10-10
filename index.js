@@ -40,7 +40,7 @@ app.post('/api/book/upload', upload.single('fileChunk'), (req, res) => {
 
   const { chunkIndex, fileName } = req.body;
   const tempPath = req.file.path;
-  const targetPath = path.join('./uploads', fileName + '.' + chunkIndex);
+  const targetPath = path.join('./tmp', fileName + '.' + chunkIndex);
 
   // Move and rename the chunk for easier reassembly
   fs.rename(tempPath, targetPath, err => {
@@ -60,13 +60,13 @@ app.post('/api/book/finalize', express.json(), async (req, res) => {
     return res.status(400).json({ error: 'fileName and totalChunks are required' });
   }
 
-  const targetPath = path.join('./uploads', fileName);
+  const targetPath = path.join('./tmp', fileName);
   const fileWriteStream = fs.createWriteStream(targetPath);
 
   try {
     // Reassemble file from chunks
     for (let i = 0; i < totalChunks; i++) {
-      const chunkPath = path.join('./uploads', `${fileName}.${i}`);
+      const chunkPath = path.join('./tmp', `${fileName}.${i}`);
 
       // Check if the chunk exists before processing
       if (!fs.existsSync(chunkPath)) {
