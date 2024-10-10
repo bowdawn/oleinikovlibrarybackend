@@ -1,6 +1,26 @@
 import BookService from "../service/book.js"
 
 class BookController {
+    async upload(req, res) {
+        try {
+            console.log("uploading . . .")
+            const result = await BookService.upload(req);
+            res.status(200).json(result);
+        } catch (e) {
+            res.status(500).json({ error: e.message });
+        }
+    }
+
+    async finalize(req, res) {
+        try {
+            console.log("finalize . . .")
+            const result = await BookService.finalize(req);
+            res.status(200).json(result);
+        } catch (e) {
+            res.status(500).json({ error: e.message });
+        }
+    }
+
     async create(req, res) {
         try {
             const book = await BookService.create(req.body, req.files.picture, req.files.pdf);

@@ -2,9 +2,7 @@ import driveService from "./auth.js"
 import dotenv from "dotenv"
 import stream from 'stream'
 dotenv.config()
-const {Readable, Duplex} = stream
-
-
+const { Duplex} = stream
 function bufferToStream(buffer) {
     let tmp = new Duplex();
     tmp.push(buffer);
