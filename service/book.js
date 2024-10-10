@@ -2,75 +2,10 @@ import Book from "../models/Book.js"
 import uploadFile from "../googledriveapi/uploadFile.js"
 import deleteFile from "../googledriveapi/deleteFile.js"
 import { getThumbnailUrl } from "../utils.js"
-import fs from 'fs';
-import path from 'path';
+
 
 class BookService {
-    // Endpoint to upload chunks
-    async finalize(req) {
-        const { chunkIndex, fileName } = req.body;
-        const tempPath = req.file.path;
-        const targetPath = path.join('./uploads', `${fileName}.${chunkIndex}`);
 
-        return new Promise((resolve, reject) => {
-            // Move the chunk to the target path
-            fs.rename(tempPath, targetPath, (err) => {
-                if (err) {
-                    reject(new Error("Failed to rename and move chunk: " + err.message));
-                } else {
-                    resolve({ message: 'Chunk uploaded successfully' });
-                }
-            });
-        });
-    }
-
-    // Assemble all the chunks into a complete file
-    async upload(req) {
-        const { fileName, totalChunks } = req.body;
-
-        if (!fileName || totalChunks === undefined) {
-            throw new Error('fileName and totalChunks are required');
-        }
-
-        const targetPath = path.join('./uploads', fileName);
-        const fileWriteStream = fs.createWriteStream(targetPath);
-
-        try {
-            for (let i = 0; i < totalChunks; i++) {
-                const chunkPath = path.join('./uploads', `${fileName}.${i}`);
-
-                if (!fs.existsSync(chunkPath)) {
-                    throw new Error(`Chunk ${i} does not exist`);
-                }
-
-                await new Promise((resolve, reject) => {
-                    const readStream = fs.createReadStream(chunkPath);
-                    readStream.pipe(fileWriteStream, { end: false });
-
-                    readStream.on('end', () => {
-                        fs.unlink(chunkPath, (err) => {
-                            if (err) reject(err);
-                            else resolve();
-                        });
-                    });
-
-                    readStream.on('error', (err) => reject(err));
-                });
-            }
-
-            fileWriteStream.end();
-
-            return new Promise((resolve, reject) => {
-                fileWriteStream.on('finish', () => {
-                    resolve({ message: 'File reassembled successfully', filePath: targetPath });
-                });
-                fileWriteStream.on('error', (err) => reject(err));
-            });
-
-        } catch (err) {
-            throw new Error("Error while assembling file: " + err.message);
-        }
-    }
 
 
     async create(book, picture) {
