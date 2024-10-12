@@ -40,15 +40,15 @@ class BookService {
             return updatedBook
         } else {
             let pdfDownload = ""
-            if (book.pdf.length > 0) {
-                pdfDownload = "https://drive.google.com/uc?id=" + book.pdf + "&export=download"
+            if (book?.pdf?.length > 0) {
+                pdfDownload = "https://drive.google.com/uc?id=" + book?.pdf + "&export=download"
                 if (current.pdf !== pdfDownload) {
-                    const fileId = current.pdf.substring(0, current.pdf.length - 16).substring(31)
+                    const fileId = current.pdf.substring(0, current?.pdf?.length - 16).substring(31)
                     await deleteFile(fileId)
                 }
             }
-            else if (current.pdf && book.pdf === "") {
-                const fileId = current.pdf.substring(0, current.pdf.length - 16).substring(31)
+            else if (current?.pdf && book?.pdf === "") {
+                const fileId = current.pdf.substring(0, current?.pdf?.length - 16).substring(31)
                 await deleteFile(fileId)
             }
             const tags = book.tags.split(",").filter(tag => tag !== "")
