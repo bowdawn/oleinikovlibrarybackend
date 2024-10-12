@@ -1,11 +1,12 @@
 import BookService from "../service/book.js"
+import chunksStorage from "../database/storage.js";
 
 class BookController {
-  
+
     async create(req, res) {
         try {
             console.log(req.body)
-           
+
             const book = await BookService.create(req.body);
             console.log("Book created:", book);
             res.status(200).json(book);  // Send the book data back as the response
@@ -17,7 +18,6 @@ class BookController {
 
     async list(req, res) {
         try {
-           
             const list = await BookService.list(req.files.pictures)
             res.status(200).json(list)
         }
@@ -114,16 +114,6 @@ class BookController {
     }
 
 
-
-
-
-
-
-
-
-
-
-
     async update(req, res) {
         try {
             console.log(req.body)
@@ -144,7 +134,36 @@ class BookController {
         catch (e) {
             res.status(500).json(e.toString())
         }
+    }
 
+    async upload(req, res) {
+        try {
+            const { chunkIndex, fileName } = req.body;
+            const result = BookService.upload({
+                chunkIndex,
+                fileName,
+                file: req.file,
+            });
+            res.send(result);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: error.toString() });
+        }
+    }
+    
+    async finalize(req, res) {
+        try {
+            const { fileName, fileType, totalChunks } = req.body;
+            const result = await BookService.finalize({
+                fileName,
+                fileType,
+                totalChunks,
+            });
+            res.status(200).json(result);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: error.toString() });
+        }
     }
 }
 

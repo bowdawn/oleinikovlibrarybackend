@@ -2,8 +2,10 @@ import Book from "../models/Book.js"
 import uploadFile from "../googledriveapi/uploadFile.js"
 import deleteFile from "../googledriveapi/deleteFile.js"
 import { getThumbnailUrl } from "../utils.js"
+import chunksStorage from "../database/storage.js";
 
 class BookService {
+    
     async create(book) {
         try {
             let pdfDownload = ""
@@ -28,6 +30,7 @@ class BookService {
             throw new Error(error.message || "An error occurred while creating the book.");
         }
     }
+
     async update(book) {
         const current = await Book.findById(book._id)
         if (!book._id) throw new Error("Book Id not specified")
@@ -66,7 +69,6 @@ class BookService {
         }
     }
 
-
     async list(pictures) {
         const result = []
         await Promise.all(pictures.map(async (picture) => {
@@ -83,7 +85,6 @@ class BookService {
         return result
     }
 
-
     async getAll(limit = 12, page = 1, sort = "", filter = { title: "", author: "", language: "", deleted: "", public: "", complete: "", tags: "", pdf: "" },) {
         sort.split(",").join(" ")
         let query = {
@@ -96,7 +97,6 @@ class BookService {
             ...(filter.tags && { tags: { $in: filter.tags.split(",") } }),
             ...(filter.pdf && (filter.pdf === "exist" || filter.pdf === "dne") && { pdf: filter.pdf === "exist" ? { '$regex': "drive.google.com" } : { $in: [null, "", undefined, "undefined"] } }),
         }
-
         const result = await Book.paginate(
             query,
             {
@@ -104,21 +104,16 @@ class BookService {
                 page: parseInt(page),
                 limit: parseInt(limit),
             })
-
         result.docs = result.docs.map((book) => {
-            book.picture = getThumbnailUrl(book.picture); // Modify picture URL
-            book.isPdf = book.pdf ? true : false; // Determine if PDF exists
-
+            book.picture = getThumbnailUrl(book.picture);
+            book.isPdf = book.pdf ? true : false;
             return book;
         });
         return result
     }
 
     async getAllPublic(limit = 12, page = 1, sort = "", filter = { title: "", author: "", language: "", deleted: "", public: "", complete: "", tags: "", pdf: "" }) {
-        // Process sort parameter
         const sortQuery = sort.split(",").join(" ");
-
-        // Construct query object
         let query = {
             title: { '$regex': filter.title ? filter.title : "(.)*", '$options': 'i' },
             author: { '$regex': filter.author ? filter.author : "(.)*", '$options': 'i' },
@@ -128,26 +123,22 @@ class BookService {
             ...(filter.tags && { tags: { $in: filter.tags.split(",") } }),
             ...(filter.pdf && (filter.pdf === "exist" || filter.pdf === "dne") && { pdf: filter.pdf === "exist" ? { '$regex': "drive.google.com" } : { $in: [null, "", undefined, "undefined"] } }),
         };
-        // Fetch results from Book.paginate
         const result = await Book.paginate(
             query,
             {
-                sort: sortQuery, // Apply sorting
+                sort: sortQuery,
                 page: parseInt(page),
                 limit: parseInt(limit),
-                select: "author title language picture tags pdf", // Fields to select
-                lean: true // Return plain JavaScript objects
+                select: "author title language picture tags pdf",
+                lean: true
             }
         );
-
-        // Process the results
         result.docs = result.docs.map((book) => {
-            book.picture = getThumbnailUrl(book.picture); // Modify picture URL
-            book.isPdf = book.pdf ? true : false; // Determine if PDF exists
-            book.pdf = ""; // Clear PDF field
+            book.picture = getThumbnailUrl(book.picture);
+            book.isPdf = book.pdf ? true : false;
+            book.pdf = "";
             return book;
         });
-        // Return the processed result
         return result;
     }
 
@@ -160,7 +151,6 @@ class BookService {
         const result = await Book.find({ isDeleted: { $in: [null, false] } }).distinct("tags")
         return result
     }
-
 
     async getOne(id) {
         if (!id) throw new Error("Book Id not specified")
@@ -179,7 +169,6 @@ class BookService {
         return result
     }
 
-
     async getOnePublic(id) {
         if (!id) throw new Error("Book Id not specified")
         const publicBook = await Book.findById(id)
@@ -188,16 +177,48 @@ class BookService {
         return publicBook
     }
 
-
-    
-
-
     async delete(id) {
         if (!id) throw new Error("Book Id not specified")
         return await Book.findByIdAndDelete(id)
     }
 
-}
+    async upload({ chunkIndex, fileName, file }) {
+        console.log('Received upload request');
+        if (!chunksStorage[fileName]) {
+            chunksStorage[fileName] = [];
+            console.log(`Initialized storage for file: ${fileName}`);
+        }
+        chunksStorage[fileName][chunkIndex] = file.buffer;
+        console.log(`Chunk ${chunkIndex} for ${fileName} uploaded successfully.`);
+        return { message: 'Chunk uploaded successfully' };
+    }
 
+    async finalize({ fileName, fileType, totalChunks }) {
+        console.log('Received finalize request');
+        if (!fileName || totalChunks === undefined) {
+            console.error('fileName and totalChunks are required');
+            throw new Error('fileName and totalChunks are required');
+        }
+        if (!chunksStorage[fileName] || chunksStorage[fileName].length < totalChunks) {
+            console.error('Not all chunks have been uploaded');
+            throw new Error('Not all chunks have been uploaded');
+        }
+        const fileBuffer = Buffer.concat(chunksStorage[fileName]);
+        console.log(`Reassembling file: ${fileName}`);
+        const fileData = {
+            name: fileName,
+            mimetype: fileType,
+            data: fileBuffer,
+        };
+        try {
+            const driveResponse = await uploadFile(fileData);
+            delete chunksStorage[fileName];
+            return { message: 'File uploaded to Google Drive successfully', driveData: driveResponse };
+        } catch (driveError) {
+            console.error('Error uploading file to Google Drive:', driveError);
+            throw new Error('Error uploading file to Google Drive');
+        }
+    }
+}
 
 export default new BookService()
