@@ -3,7 +3,6 @@ import uploadFile from "../googledriveapi/uploadFile.js"
 import deleteFile from "../googledriveapi/deleteFile.js"
 import { getThumbnailUrl } from "../utils.js"
 
-
 class BookService {
     async create(book) {
         try {
@@ -29,7 +28,6 @@ class BookService {
             throw new Error(error.message || "An error occurred while creating the book.");
         }
     }
-
     async update(book) {
         const current = await Book.findById(book._id)
         if (!book._id) throw new Error("Book Id not specified")
@@ -58,6 +56,7 @@ class BookService {
                 book._id,
                 {
                     ...book,
+                    picture: current.picture,
                     pdf: pdfDownload,
                     tags: tags
                 },
