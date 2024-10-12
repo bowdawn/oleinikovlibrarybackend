@@ -127,7 +127,7 @@ class BookController {
     async update(req, res) {
         try {
             console.log(req.body)
-            const updatedBook = await BookService.update(req.body, req.files != null ? req.files.pdf : null)
+            const updatedBook = await BookService.update(req.body)
             return res.json(updatedBook)
         }
         catch (e) {
