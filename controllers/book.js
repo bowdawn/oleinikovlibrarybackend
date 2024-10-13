@@ -8,10 +8,10 @@ class BookController {
 
             const book = await BookService.create(req.body);
             console.log("Book created:", book);
-            res.status(200).json(book);  // Send the book data back as the response
+            res.status(200).json(book);  
         } catch (e) {
             console.error("Error in create route:", e);
-            res.status(500).json({ error: e.message });  // Send the error message back in the response
+            res.status(500).json({ error: e.message });  
         }
     }
 
@@ -21,7 +21,6 @@ class BookController {
             res.status(200).json(list)
         }
         catch (e) {
-            console.log(e)
             res.status(500).json(e.toString())
         }
     }
